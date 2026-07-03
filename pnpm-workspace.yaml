@@ -24,6 +24,7 @@ packages:
 allowBuilds:
   '@prisma/engines': true
   esbuild: true
+  msw: true
   prisma: true
 
 catalog:
@@ -50,6 +51,8 @@ catalog:
   eslint-plugin-react-refresh: 0.5.3
   express: 5.2.1
   happy-dom: 20.10.6
+  msw: 2.14.6
+  msw-trpc: 2.0.1
   pg: 8.22.0
   prisma: 7.8.0
   prisma-lint: 0.13.1

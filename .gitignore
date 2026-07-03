@@ -4,3 +4,4 @@ dist
 *.log
 **/.vscode
 server/src/generated
+client/public/mockServiceWorker.js
