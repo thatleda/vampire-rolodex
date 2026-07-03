@@ -37,9 +37,11 @@ export async function fetchVisitFromExternalApi(): Promise<ExternalVisit[]> {
     if (!(error instanceof TypeError)) {
       throw error
     }
+    console.error('Failed to reach the external lab data provider:', error)
     throw new Error('Could not reach the external lab data provider. Please try again shortly.')
   }
   if (!response.ok) {
+    console.error(`External lab data provider returned HTTP ${response.status}:`, await response.text())
     throw new Error(`The external lab data provider returned an error (HTTP ${response.status}). Please try again shortly.`)
   }
   return response.json()
