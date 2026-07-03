@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "model-name-grammatical-number": ["error", { "style": "singular" }],
+    "require-field-index": ["error", { "forAllRelations": true }],
+    "model-name-pascal-case": ["error"],
+    "field-name-camel-case": ["error"],
+    "field-name-grammatical-number": ["error", { "ifList": "plural" }],
+    "forbid-field": ["error", { "forbid": ["name", "firstName", "lastName", "fullName", "email"] }],
+    "require-field": ["error", { "require": ["createdAt", "updatedAt"] }]
+  }
+}

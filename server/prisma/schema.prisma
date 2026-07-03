@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Patient {
+  id           String        @id
+  birthdate    DateTime      @db.Date
+  gender       Int
+  ethnicity    Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  observations Observation[]
+}
+
+model Observation {
+  id        String   @id @default(cuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  testDate  DateTime @db.Date
+  results   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([patientId, testDate])
+  @@index([results], type: Gin)
+}
