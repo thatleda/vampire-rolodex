@@ -1,0 +1,19 @@
+{
+  "name": "vampire-rolodex",
+  "private": true,
+  "scripts": {
+    "dev:db": "docker compose up -d",
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:prisma": "pnpm --filter server lint:prisma",
+    "test": "pnpm --filter server test && pnpm --filter client test"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:",
+    "@eslint-react/eslint-plugin": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-react-refresh": "catalog:"
+  }
+}
