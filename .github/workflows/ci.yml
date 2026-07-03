@@ -68,3 +68,34 @@ jobs:
       - run: pnpm --filter client run test
 
       - run: pnpm --filter client run build
+
+  deploy:
+    needs: [server, client]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v7.0.0
+
+      - uses: pnpm/action-setup@v6.0.9
+
+      - uses: actions/setup-node@v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter server exec prisma migrate deploy
+
+      - uses: sws2apps/render-deployment@v2.1.0
+        with:
+          serviceId: ${{ secrets.RENDER_SERVER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+
+      - uses: sws2apps/render-deployment@v2.1.0
+        with:
+          serviceId: ${{ secrets.RENDER_CLIENT_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}

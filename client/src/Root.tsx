@@ -8,7 +8,7 @@ export function Root() {
   const [queryClient] = useState(() => new QueryClient())
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [httpLink({ url: '/trpc' })],
+      links: [httpLink({ url: `${import.meta.env.VITE_API_URL ?? ''}/trpc` })],
     }),
   )
 
