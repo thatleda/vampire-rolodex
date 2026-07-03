@@ -79,18 +79,20 @@ export function PatientsTable() {
   }
 
   if (patientsQuery.isError) {
-    return <p>Failed to load patients.</p>
+    return <p role="alert">{patientsQuery.error.message}</p>
   }
 
   return (
     <div>
       <nav aria-label="Data actions">
-        <button type="button" onClick={() => resetMutation.mutate()}>
+        <button type="button" onClick={() => resetMutation.mutate()} disabled={resetMutation.isPending}>
           Reset
         </button>
-        <button type="button" onClick={() => addNewMutation.mutate()}>
+        <button type="button" onClick={() => addNewMutation.mutate()} disabled={addNewMutation.isPending}>
           Add new data
         </button>
+        {resetMutation.isError && <p role="alert">{resetMutation.error.message}</p>}
+        {addNewMutation.isError && <p role="alert">{addNewMutation.error.message}</p>}
       </nav>
       <table>
         <thead>

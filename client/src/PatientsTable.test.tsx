@@ -5,6 +5,10 @@ import { server } from './mocks/server.ts'
 import { PatientsTable } from './PatientsTable.tsx'
 import { renderWithTrpc } from './test-utils.tsx'
 
+function trpcError(message: string) {
+  return Object.assign(new Error(message), { code: 'INTERNAL_SERVER_ERROR' })
+}
+
 function manyPatientsWithNoObservations(count: number) {
   return Array.from({ length: count }, (_, index) => ({
     id: `haha-patient-page-test-${index + 1}`,
@@ -79,5 +83,41 @@ describe('patientsTable', () => {
     expect(screen.getAllByText('No observations recorded')).toHaveLength(5)
     expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+  })
+
+  it('shows the server error message when the initial load fails', async () => {
+    server.use(trpcMsw.patients.list.query(() => {
+      throw trpcError('The external lab data provider returned an error (HTTP 403). Please try again shortly.')
+    }))
+    renderWithTrpc(<PatientsTable />)
+
+    await expect(screen.findByRole('alert')).resolves.toHaveTextContent('HTTP 403')
+  })
+
+  it('shows the server error message when adding new data fails, without wiping the table', async () => {
+    server.use(trpcMsw.patients.addNew.mutation(() => {
+      throw trpcError('Could not reach the external lab data provider. Please try again shortly.')
+    }))
+    const user = userEvent.setup()
+    renderWithTrpc(<PatientsTable />)
+
+    await screen.findByText('No observations recorded')
+    await user.click(screen.getByRole('button', { name: 'Add new data' }))
+
+    await expect(screen.findByRole('alert')).resolves.toHaveTextContent('Could not reach the external lab data provider')
+    expect(screen.getByText('No observations recorded')).toBeInTheDocument()
+  })
+
+  it('shows the server error message when reset fails', async () => {
+    server.use(trpcMsw.patients.reset.mutation(() => {
+      throw trpcError('Could not reach the external lab data provider. Please try again shortly.')
+    }))
+    const user = userEvent.setup()
+    renderWithTrpc(<PatientsTable />)
+
+    await screen.findByText('No observations recorded')
+    await user.click(screen.getByRole('button', { name: 'Reset' }))
+
+    await expect(screen.findByRole('alert')).resolves.toHaveTextContent('Could not reach the external lab data provider')
   })
 })

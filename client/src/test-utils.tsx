@@ -5,7 +5,7 @@ import { httpLink } from '@trpc/client'
 import { trpc } from './utils/trpc.ts'
 
 export function renderWithTrpc(ui: ReactElement) {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   const trpcClient = trpc.createClient({ links: [httpLink({ url: '/trpc' })] })
 
   return render(

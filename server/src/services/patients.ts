@@ -29,14 +29,18 @@ export function extractResults(visit: ExternalVisit): Record<string, { value: nu
 }
 
 export async function fetchVisitFromExternalApi(): Promise<ExternalVisit[]> {
-  const response = await fetch(EXTERNAL_API_URL, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; vampire-rolodex/1.0)',
-      'Accept': 'application/json',
-    },
-  })
+  let response: Response
+  try {
+    response = await fetch(EXTERNAL_API_URL)
+  }
+  catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error
+    }
+    throw new Error('Could not reach the external lab data provider. Please try again shortly.')
+  }
   if (!response.ok) {
-    throw new Error(`External API responded with ${response.status}`)
+    throw new Error(`The external lab data provider returned an error (HTTP ${response.status}). Please try again shortly.`)
   }
   return response.json()
 }

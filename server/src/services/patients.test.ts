@@ -68,10 +68,22 @@ describe('fetchVisitFromExternalApi', () => {
     expect(await fetchVisitFromExternalApi()).toEqual([visit()])
   })
 
-  it('throws when the response is not ok', async () => {
+  it('throws a friendly error when the response is not ok', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(null, false, 500)))
 
-    await expect(fetchVisitFromExternalApi()).rejects.toThrow('External API responded with 500')
+    await expect(fetchVisitFromExternalApi()).rejects.toThrow('HTTP 500')
+  })
+
+  it('throws a friendly error when the network request itself fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')))
+
+    await expect(fetchVisitFromExternalApi()).rejects.toThrow('Could not reach the external lab data provider')
+  })
+
+  it('does not mask an unrelated error as a network failure', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new RangeError('something unrelated broke')))
+
+    await expect(fetchVisitFromExternalApi()).rejects.toThrow('something unrelated broke')
   })
 })
 
