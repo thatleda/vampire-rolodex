@@ -14,6 +14,7 @@
     "@antfu/eslint-config": "catalog:",
     "@eslint-react/eslint-plugin": "catalog:",
     "eslint": "catalog:",
-    "eslint-plugin-react-refresh": "catalog:"
+    "eslint-plugin-react-refresh": "catalog:",
+    "eslint-plugin-testing-library": "catalog:"
   }
 }
