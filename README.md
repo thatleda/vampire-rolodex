@@ -87,4 +87,15 @@ pnpm lint:prisma     # schema conventions: naming, required indexes, no PII fiel
 
 ## Deployment
 
-Not yet deployed — planned: Render (app) + Neon (Postgres).
+Deployed on Render: a static site for the client and a native Node web service for the server, with Postgres also on Render. `.github/workflows/ci.yml` runs `server`/`client` in parallel on every push/PR, then a `deploy` job (gated to `main` pushes, after both pass) runs `prisma migrate deploy` against the real database and redeploys both services via `sws2apps/render-deployment`.
+
+### Known limitation: the external mock API occasionally 403s in production
+
+Calls to the external lab data API from the deployed server intermittently fail with HTTP 403, while the exact same request from a local machine succeeds every time. The 403 response body is Google's generic Frontend (GFE) error page ("Error 403 (Forbidden)!!1" / "Your client does not have permission to get URL `/data` from this server") — not an error from the mock API's own application code. That page is what Google's edge infrastructure serves when it blocks a request before it reaches the backend, which points to an IP/ASN-level abuse block against Render's datacenter IP range rather than anything wrong with our request.
+
+Ruled out before landing on this explanation:
+- **Request headers** — added a `User-Agent`, then a full browser-shaped header set (`Accept-Language`, `Sec-Fetch-*`, `Upgrade-Insecure-Requests`, etc.). Confirmed with an A/B test using the exact same header set: 200 from a residential IP, 403 from Render, every time. Fingerprint is identical; only the origin IP differs.
+- **Concurrent request volume** — 10 parallel requests from a residential IP all succeeded.
+- **A relay/proxy** — considered and rejected. Any proxy cheap enough to stand up for this (another Render service, a Lambda, a Fly app) is still a datacenter IP and would likely hit the same block; a residential-IP proxy service is a different category of tool entirely and out of scope for what this assignment calls for.
+
+This isn't fixable from the application side. The app degrades gracefully when it happens: the backend logs the real failure detail server-side and returns a clear message instead of a raw stack trace, and the frontend surfaces that message instead of crashing or showing a blank table.

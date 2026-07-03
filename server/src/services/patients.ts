@@ -31,19 +31,7 @@ export function extractResults(visit: ExternalVisit): Record<string, { value: nu
 export async function fetchVisitFromExternalApi(): Promise<ExternalVisit[]> {
   let response: Response
   try {
-    response = await fetch(EXTERNAL_API_URL, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:152.0) Gecko/20100101 Firefox/152.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Sec-GPC': '1',
-        'Upgrade-Insecure-Requests': '1',
-      },
-    })
+    response = await fetch(EXTERNAL_API_URL)
   }
   catch (error) {
     if (!(error instanceof TypeError)) {
