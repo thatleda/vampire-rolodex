@@ -29,7 +29,12 @@ export function extractResults(visit: ExternalVisit): Record<string, { value: nu
 }
 
 export async function fetchVisitFromExternalApi(): Promise<ExternalVisit[]> {
-  const response = await fetch(EXTERNAL_API_URL)
+  const response = await fetch(EXTERNAL_API_URL, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; vampire-rolodex/1.0)',
+      'Accept': 'application/json',
+    },
+  })
   if (!response.ok) {
     throw new Error(`External API responded with ${response.status}`)
   }
