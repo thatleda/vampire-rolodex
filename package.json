@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@11.8.0",
   "scripts": {
+    "dev": "pnpm dev:db && pnpm --parallel -r run dev",
     "dev:db": "docker compose up -d",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter client dev",

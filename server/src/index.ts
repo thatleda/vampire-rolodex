@@ -12,7 +12,7 @@ const app = express()
 app.use(cors())
 app.use('/trpc', createExpressMiddleware({ router: appRouter }))
 
-const port = process.env.PORT ?? 4000
+const port = process.env.SERVER_PORT ?? 4000
 app.listen(port, () => {
   console.warn(`vampire-rolodex server listening on :${port}`)
 })
